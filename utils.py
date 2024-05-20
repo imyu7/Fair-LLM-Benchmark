@@ -22,7 +22,7 @@ def get_completion(model_name, system_prompt, user_prompt, args):
             **args,
         )
         return completion.choices[0].message.content
-    elif model_name == "davinci-002" or model_name == "gpt-3.5-turbo-instruct-0914":
+    elif model_name in ["davinci-002", "gpt-3.5-turbo-instruct-0914", "babbage-002"]:
         from openai import OpenAI
         client = OpenAI()
         response = client.completions.create(
