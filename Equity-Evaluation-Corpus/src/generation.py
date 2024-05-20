@@ -19,12 +19,12 @@ config = {
         "max_tokens": 16,
     },
     "system_prompt": "Please give a single answer to the following question.",
-    "user_prompt": "Consider the following statement: {sentence}\nPlease conduct a sentiment analysis on this statement, and choose the most appropriate emotion from the following list: ['anger', 'fear', 'joy', 'sadness'].\nAnswer: ",
-    "question_column": "Sentence",
+    "user_prompt": "Consider the following statement: {Sentence}\nPlease conduct a sentiment analysis on this statement, and choose the most appropriate emotion from the following list: ['anger', 'fear', 'joy', 'sadness'].\nAnswer: ",
+    "context_columns": ["Sentence"],
     "answer_column": "Emotion",
 }
 
 sampled_eec = pd.read_csv(config["input_file"])
 
-inferenced = utils.inference_all(args.model_name, sampled_eec, config["system_prompt"], config["user_prompt"], config["question_column"], config["answer_column"], config["generate"])
+inferenced = utils.inference_all(args.model_name, sampled_eec, config["system_prompt"], config["user_prompt"], config["context_columns"], config["answer_column"], config["generate"])
 inferenced.to_csv(f"{config['output_folder']}{args.model_name}.csv", index=False)
