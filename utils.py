@@ -7,12 +7,19 @@ import re
 load_dotenv(".env")
 
 # client = OpenAI()
-
+def prepare_model(model_name):
+    if model_name in ['gpt-3.5-turbo-0125', 'gpt-4o-2024-05-13', "davinci-002", "gpt-3.5-turbo-instruct-0914", "babbage-002"]:
+        from openai import OpenAI
+        global client 
+        client = OpenAI()
+    # elif model_name in ["meta-llama/Meta-Llama-3-8B"]:
+    #     from transformers import AutoTokenizer, AutoModelForCausalLM
+    #     tokenizer = AutoTokenizer.from_pretrained(model_name)
+    #     model = AutoModelForCausalLM.from_pretrained(model_name)
+    #     return tokenizer, model
 
 def get_completion(model_name, system_prompt, user_prompt, args):
-    if model_name == 'gpt-3.5-turbo-0125' or model_name == 'gpt-4o-2024-05-13':
-        from openai import OpenAI
-        client = OpenAI()
+    if model_name in ['gpt-3.5-turbo-0125', 'gpt-4o-2024-05-13']:
         completion = client.chat.completions.create(
             model=model_name,
             messages=[
@@ -23,18 +30,16 @@ def get_completion(model_name, system_prompt, user_prompt, args):
         )
         return completion.choices[0].message.content
     elif model_name in ["davinci-002", "gpt-3.5-turbo-instruct-0914", "babbage-002"]:
-        from openai import OpenAI
-        client = OpenAI()
         response = client.completions.create(
             model=model_name,
             prompt=f"{system_prompt}\n{user_prompt}",
             **args,
         )
         return response.choices[0].text
-    elif model_name == "meta-llama/Meta-Llama-3-8B":
-        from transformers import AutoTokenizer, AutoModelForCausalLM
-        tokenizer = AutoTokenizer.from_pretrained(model_name)
-        model = AutoModelForCausalLM.from_pretrained(model_name)
+    # elif model_name in ["meta-llama/Meta-Llama-3-8B"]:
+    #     from transformers import AutoTokenizer, AutoModelForCausalLM
+    #     tokenizer = AutoTokenizer.from_pretrained(model_name)
+    #     model = AutoModelForCausalLM.from_pretrained(model_name)
 
 
 
@@ -49,6 +54,7 @@ def include_match(prediction, answer):
     return answer in prediction
 
 def inference_all(model_name, df, system_prompt, user_prompt, context_columns, answer_column, args, check_answer=True):
+    prepare_model(model_name)
     for index, row in df.iterrows():
         data = {col: row[col] for col in context_columns}
         formatted_user_prompt = user_prompt.format(**data)
