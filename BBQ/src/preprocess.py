@@ -32,45 +32,29 @@ for cat in category:
     df = pd.concat([df, df_cat], axis=0)
 
 # preprocess
-df["stereotyped_groups"] = df["additional_metadata"].apply(lambda x: x["stereotyped_groups"])
-
-for i in range(3):
-    df[f"ans{i}_info"] = df["answer_info"].apply(lambda x: x[f"ans{i}"][1])
-
-for index, row in df.iterrows():
-    if row["ans0_info"] == "unknown": 
-        df.at[index, "unknown_choice"] = '0'
-    elif row["ans1_info"] == "unknown":
-        df.at[index, "unknown_choice"] = '1'
-    elif row["ans2_info"] == "unknown":
-        df.at[index, "unknown_choice"] = '2'
+def change_gender_terms(text):
+    if text == "woman" or text == "girl":
+        return "F"
+    elif text == "man" or text == "boy":
+        return "M"
     else:
-        df.at[index, "unknown_choice"] = '-1'
-    if row["ans0_info"] in row["stereotyped_groups"]:
-        df.at[index, "stereotyped_choice"] = '0'
-    elif row["ans1_info"] in row["stereotyped_groups"]:
-        df.at[index, "stereotyped_choice"] = '1'
-    elif row["ans2_info"] in row["stereotyped_groups"]:
-        df.at[index, "stereotyped_choice"] = '2'
-    else:
-        df.at[index, "stereotyped_choice"] = '-1'
-    
-for i in range(3):
-    df[f"ans{i}_info"] = df[f"ans{i}_info"].apply(lambda x: "F" if x == "woman" or x == "girl" else "M" if x == "man" or x == "boy" else x)
+        return text
 
-def find_unknown_choice(row):
-    for i in range(3):
-        if row[f"ans{i}_info"] == "unknown":
-            return str(i)
-    return '-1'
+df["unknown_choice"] = df["answer_info"].apply(lambda x: 0 if x["ans0"][1] == "unknown" else 1 if x["ans1"][1] == "unknown" else 2 if x["ans2"][1] == "unknown" else '-1')
+df["stereotyped_choice"] = df.apply(
+    lambda x: 
+    0 if change_gender_terms(x["answer_info"]["ans0"][1]) in x["additional_metadata"]["stereotyped_groups"] 
+    else 1 if change_gender_terms(x["answer_info"]["ans1"][1]) in x["additional_metadata"]["stereotyped_groups"] 
+    else 2 if change_gender_terms(x["answer_info"]["ans2"][1]) in x["additional_metadata"]["stereotyped_groups"] 
+    else '-1', 
+    axis=1)
 
-def find_stereotyped_choice(row):
-    for i in range(3):
-        if row[f"ans{i}_info"] in row["stereotyped_groups"]:
-            return str(i)
-    return '-1'
+assert len(df[df["unknown_choice"] == '-1']) == 0
+assert len(df[df["stereotyped_choice"] == '-1']) == 0
 
 
-df.drop(columns=["answer_info", "additional_metadata", "stereotyped_groups", "ans0_info", "ans1_info", "ans2_info"], inplace=True)
+df.drop(columns=["answer_info", "additional_metadata"], inplace=True)
 print(df.shape)
+
+# save
 df.to_csv(config["output_file"], index=False)
