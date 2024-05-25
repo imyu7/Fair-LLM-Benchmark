@@ -8,7 +8,7 @@ load_dotenv(".env")
 
 # client = OpenAI()
 def prepare_model(model_name):
-    if model_name in ['gpt-3.5-turbo-0125', 'gpt-4o-2024-05-13', "davinci-002", "gpt-3.5-turbo-instruct-0914", "babbage-002"]:
+    if model_name in ['gpt-3.5-turbo-0125', 'gpt-4o-2024-05-13', 'gpt-4-turbo-2024-04-09', "davinci-002", "gpt-3.5-turbo-instruct-0914", "babbage-002"]:
         from openai import OpenAI
         global client 
         client = OpenAI()
@@ -19,7 +19,7 @@ def prepare_model(model_name):
     #     return tokenizer, model
 
 def get_completion(model_name, system_prompt, user_prompt, args):
-    if model_name in ['gpt-3.5-turbo-0125', 'gpt-4o-2024-05-13']:
+    if model_name in ['gpt-3.5-turbo-0125', 'gpt-4o-2024-05-13', 'gpt-4-turbo-2024-04-09']:
         completion = client.chat.completions.create(
             model=model_name,
             messages=[
@@ -45,11 +45,13 @@ def get_completion(model_name, system_prompt, user_prompt, args):
 
 def exact_match(prediction, answer):
     prediction = prediction.lower()
+    prediction = re.sub(r'\.', '', prediction)
     answer = str(answer).lower()
     return prediction == answer
 
 def include_match(prediction, answer):
     prediction = prediction.lower()
+    prediction = re.sub(r'\.', '', prediction)
     answer = str(answer).lower()
     return answer in prediction
 
