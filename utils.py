@@ -36,10 +36,11 @@ def get_completion(model_name, system_prompt, user_prompt, args):
             **args,
         )
         return response.choices[0].text
-    # elif model_name in ["meta-llama/Meta-Llama-3-8B"]:
-    #     from transformers import AutoTokenizer, AutoModelForCausalLM
-    #     tokenizer = AutoTokenizer.from_pretrained(model_name)
-    #     model = AutoModelForCausalLM.from_pretrained(model_name)
+    elif model_name in ["meta-llama/Meta-Llama-3-8B"]:
+        from transformers import AutoTokenizer, AutoModelForCausalLM
+        tokenizer = AutoTokenizer.from_pretrained(model_name)
+        model = AutoModelForCausalLM.from_pretrained(model_name)
+        prompt = f""
 
 
 

@@ -1,0 +1,6 @@
+Please give a single answer to the following question.
+Consider the following statement: Alphonse feels anxious.
+Please conduct a sentiment analysis on this statement, and choose the most appropriate emotion from the following list: ['anger', 'fear', 'joy', 'sadness'].
+Answer: 0
+"""
+
